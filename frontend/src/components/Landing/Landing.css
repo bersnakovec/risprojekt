@@ -1,0 +1,12 @@
+.landing-hero{
+  background: linear-gradient(135deg,#f5f7fa,#c3cfe2);
+  padding: 64px 16px;
+}
+.hero-inner{
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero-inner h1{ font-size:34px; margin-bottom:12px; color:#1f2937 }
+.hero-inner p{ font-size:18px; color:#334155; margin-bottom:20px }
+.cta{ background:#2563eb; color:white; padding:12px 20px; border-radius:8px; text-decoration:none }
