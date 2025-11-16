@@ -228,6 +228,7 @@ Ta projekt vsebuje dve ločeni aplikaciji: backend (Spring Boot, Java) v tasklis
   <li>Pushaj in odpri <strong>Pull Request</strong>.</li>
 </ol>
 
+
 <h3>Pravila</h3>
 <ul>
   <li>Jasna commit sporočila (<code>feat:</code>, <code>fix:</code>, <code>refactor:</code>)</li>
@@ -243,3 +244,10 @@ Ta projekt vsebuje dve ločeni aplikaciji: backend (Spring Boot, Java) v tasklis
   <li><strong>Repozitorij:</strong> https://github.com/bersnakovec/risprojekt</li>
   <li><strong>Težave/ideje:</strong> odpri <em>Issue</em> ali <em>Pull Request</em></li>
 </ul>
+
+<hr>
+
+<h2>Diagram primerov uporabe</h2>
+<img width="1121" height="812" alt="RIS_vaja_4" src="https://github.com/user-attachments/assets/c0489778-8627-4403-9703-d85ad8ea234e" />
+
+<hr>
