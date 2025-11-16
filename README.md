@@ -1,5 +1,6 @@
 <h1>Todo Aplikacija</h1>
 Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in React frontend-om.
+
 <hr>
 <h2>⚙️ Tehnologije in orodja</h2>
 
@@ -81,6 +82,9 @@ Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in Reac
     </tr>
   </tbody>
 </table>
+
+<hr>
+
 
 <h2>📁 Struktura projekta</h2>
 
@@ -251,3 +255,37 @@ Ta projekt vsebuje dve ločeni aplikaciji: backend (Spring Boot, Java) v tasklis
 <img width="1121" height="812" alt="RIS_vaja_4" src="https://github.com/user-attachments/assets/c0489778-8627-4403-9703-d85ad8ea234e" />
 
 <hr>
+
+<hr>
+<h2>🎯 Vizija projekta</h2>
+<p>
+  Naša vizija je ustvariti preprosto, odzivno in razširljivo aplikacijo za upravljanje nalog, ki bo uporabnikom pomagala organizirati vsakodnevna opravila, povečati produktivnost in izboljšati timsko sodelovanje. Aplikacija je namenjena vsem, ki želijo hitro ustvariti in spremljati seznam nalog brez kompleksnih nastavitev.
+</p>
+<p>
+  Želimo zagotoviti prijazno uporabniško izkušnjo z jasnimi kontrolami za dodajanje, urejanje in filtriranje nalog, prioritizacijo ter možnostjo povezanosti s preprostimi bazo podatkov. V daljšem smislu želimo omogočiti tudi enostavno razširljivost — npr. dodajanje oznak, rokov, obvestil in skupinske rabe.
+</p>
+<p>
+  Cilj je, da aplikacija izboljša uporabniško izkušnjo pri upravljanju nalog z intuitivnim vmesnikom, hitrim odgovorom na uporabniške vnose in jasnim prikazom prioritete ter stanja nalog. S tem želimo pomagati uporabnikom, da hitreje dokončajo svoje obveznosti in lažje sledijo napredku pri večjih projektih.
+</p>
+
+<h2>📚 Besednjak</h2>
+<p>Kratek seznam ključnih izrazov in njihov pomen v kontekstu te aplikacije:</p>
+<ul>
+  <li><strong>Naloga (Task)</strong> – osnovni objekt v aplikaciji, ki predstavlja opravilo. V modelu <code>Task.java</code> ima polja <code>id</code>, <code>name</code>, <code>dateDue</code> (rok) in <code>checked</code> (označena kot dokončano).</li>
+  <li><strong>Seznam nalog</strong> – zbirka vseh nalog, ki jih upravljamo v aplikaciji; prikazano na frontend komponenti <code>Tasks</code>.</li>
+  <li><strong>Status / checked</strong> – boolean vrednost (<code>true</code>/ <code>false</code>) pri nalogi, ki označuje, ali je naloga zaključena.</li>
+  <li><strong>Rok (dateDue)</strong> – datum, do katerega naj bi bila naloga opravljena (tip <code>LocalDate</code> v backendu).</li>
+  <li><strong>CRUD</strong> – standardni podatkovni operacije: Create, Read, Update, Delete — v aplikaciji podprte z REST endpointi v <code>TaskController</code>.</li>
+  <li><strong>REST API</strong> – vmesnik za komunikacijo med frontend in backend, npr. klici na <code>/api/tasks</code> (GET, POST, PUT, DELETE).</li>
+  <li><strong>Endpoint</strong> – posamezen URL (npr. <code>/api/tasks</code> ali <code>/api/tasks/{id}</code>) za interakcijo z API-jem.</li>
+  <li><strong>Repository</strong> – sloj za dostop do baze; v projektu <code>TaskRepository</code> podeduje od <code>JpaRepository</code> in nudi poizvedbe.</li>
+  <li><strong>Controller</strong> – komponenta, ki obdeluje HTTP zahtevke in odgovori (npr. <code>TaskController</code>).</li>
+  <li><strong>JPA entiteta</strong> – Java razred, označen z <code>@Entity</code>, ki predstavlja tabelo v relacijski bazi (npr. <code>Task</code> → tabela <code>tasks</code>).</li>
+  <li><strong>Frontend (React)</strong> – uporabniški vmesnik aplikacije, ki uporablja komponente za prikaz in upravljanje nalog.</li>
+  <li><strong>Axios</strong> – knjižnica za HTTP klice iz frontenda; konfiguriran v <code>frontend/src/services/Api.js</code>.</li>
+  <li><strong>H2 baza</strong> – vgrajena (in-memory) baza, namenjena hitremu lokalnemu razvoju in testiranju.</li>
+  <li><strong>MySQL</strong> – priporočena produkcijska baza podatkov, ki jo lahko konfigurirate v <code>application.properties</code>.</li>
+  <li><strong>CORS</strong> – kratica za Cross-Origin Resource Sharing; v projektu omogočeno z <code>@CrossOrigin(origins = "*")</code> v <code>TaskController</code> za razvojne potrebe (dovoljuje klice iz frontenda na localhost:3000).</li>
+  <li><strong>Iskanje (search)</strong> – query parameter v <code>GET /api/tasks</code>, ki omogoča filtriranje rezultatov po imenu (<code>findByNameContainingIgnoreCase</code>). </li>
+</ul>
+
