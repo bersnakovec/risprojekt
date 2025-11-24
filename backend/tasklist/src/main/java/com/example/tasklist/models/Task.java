@@ -1,5 +1,6 @@
 package com.example.tasklist.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -17,13 +18,19 @@ public class Task {
 
     private boolean checked;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
+    private User user;
+
     public Task() {
     }
 
-    public Task(String name, LocalDate dateDue, boolean checked) {
+    public Task(String name, LocalDate dateDue, boolean checked, User user) {
         this.name = name;
         this.dateDue = dateDue;
         this.checked = checked;
+        this.user = user;
     }
 
     public Long getId() {
@@ -56,6 +63,14 @@ public class Task {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

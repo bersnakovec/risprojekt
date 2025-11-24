@@ -1,7 +1,170 @@
 <h1>Todo Aplikacija</h1>
 Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in React frontend-om.
-
 <hr>
+
+<h2>🎯 Vizija projekta</h2>
+<p>
+<strong>Namen:</strong> Todo aplikacija je namenjena vsem, ki želijo povečati svojo produktivnost in učinkovito organizirati vsakodnevna opravila. Aplikacija je zasnovana za študente, profesionalce in posameznike, ki potrebujejo pregleden in enostaven sistem za upravljanje nalog.
+</p>
+<p>
+<strong>Cilj:</strong> Naš cilj je ustvariti intuitivno, zanesljivo in dostopno spletno aplikacijo, ki uporabnikom omogoča hitro dodajanje, urejanje, brisanje in pregledovanje opravil. S tem želimo odpraviti težave, povezane z neorganiziranostjo, pozabljenimi nalogami in pomanjkanjem učinkovitih orodij za načrtovanje dela.
+</p>
+<p>
+<strong>Vrednost:</strong> Aplikacija izboljša uporabniško izkušnjo z enostavnim vmesnikom, hitrim odzivom in možnostjo dostopa od kjerkoli preko spletnega brskalnika. Z jasno strukturo in preglednim prikazom nalog uporabnikom omogoča boljše upravljanje časa in večjo produktivnost pri vsakodnevnih opravilih.
+</p>
+<hr>
+
+<h2>📖 Besednjak</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Izraz</th>
+      <th>Razlaga</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Opravilo (Task)</strong></td>
+      <td>Osnovna enota aplikacije - naloga ali aktivnost, ki jo uporabnik želi izpolniti. Vsebuje naziv, opis in status.</td>
+    </tr>
+    <tr>
+      <td><strong>Backend</strong></td>
+      <td>Strežniška stran aplikacije, napisana v Java Spring Boot, ki upravlja poslovno logiko, dostop do podatkov in REST API.</td>
+    </tr>
+    <tr>
+      <td><strong>Frontend</strong></td>
+      <td>Uporabniški vmesnik aplikacije, razvit v React, ki prikazuje opravila in omogoča interakcijo z uporabnikom.</td>
+    </tr>
+    <tr>
+      <td><strong>REST API</strong></td>
+      <td>Aplikacijski vmesnik za komunikacijo med frontend-om in backend-om preko HTTP protokola (GET, POST, PUT, DELETE).</td>
+    </tr>
+    <tr>
+      <td><strong>Controller</strong></td>
+      <td>Komponenta v backend-u, ki sprejema HTTP zahteve in vrača odgovore. Primer: <code>TaskController.java</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Repository (DAO)</strong></td>
+      <td>Sloj za dostop do podatkov (Data Access Object), ki omogoča operacije CRUD nad bazo podatkov.</td>
+    </tr>
+    <tr>
+      <td><strong>Model (Entity)</strong></td>
+      <td>JPA entiteta, ki predstavlja tabelo v bazi podatkov. Primer: <code>Task.java</code> predstavlja tabelo z opravili.</td>
+    </tr>
+    <tr>
+      <td><strong>JPA (Java Persistence API)</strong></td>
+      <td>Standard za objektno-relacijsko preslikavo (ORM) v Javi, ki omogoča delo s podatkovno bazo preko Java objektov.</td>
+    </tr>
+    <tr>
+      <td><strong>Hibernate</strong></td>
+      <td>Implementacija JPA standarda, ki avtomatizira preslikavo med Java razredi in tabelami v bazi.</td>
+    </tr>
+    <tr>
+      <td><strong>Maven</strong></td>
+      <td>Orodje za gradnjo projekta in upravljanje odvisnosti v Java projektih.</td>
+    </tr>
+    <tr>
+      <td><strong>MySQL</strong></td>
+      <td>Relacijska podatkovna baza, uporabljena za trajno shranjevanje opravil v produkcijskem okolju.</td>
+    </tr>
+    <tr>
+      <td><strong>H2 Database</strong></td>
+      <td>Vgrajena spominska baza podatkov, primerna za razvoj in testiranje brez potrebe po namestitvi MySQL.</td>
+    </tr>
+    <tr>
+      <td><strong>Axios</strong></td>
+      <td>JavaScript knjižnica za izvajanje HTTP zahtev iz frontend-a proti REST API-ju na backend-u.</td>
+    </tr>
+    <tr>
+      <td><strong>React Component</strong></td>
+      <td>Ponovno uporabna gradnika uporabniškega vmesnika v React-u. Primer: <code>TaskList</code>, <code>Navbar</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>CRUD operacije</strong></td>
+      <td>Osnovne operacije nad podatki: Create (ustvari), Read (preberi), Update (posodobi), Delete (izbriši).</td>
+    </tr>
+  </tbody>
+</table>
+<hr>
+
+<h2>📊 Diagram primerov uporabe</h2>
+<p>
+Spodnji diagram prikazuje glavne funkcionalnosti aplikacije in interakcije med uporabniki ter sistemom. Diagram vključuje dva akterja (Gost in Uporabnik) ter vse ključne primere uporabe aplikacije.
+</p>
+
+```plantuml
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Gost" as Guest
+actor "Uporabnik" as User
+
+rectangle "Todo Aplikacija" {
+  usecase "Registracija" as UC1
+  usecase "Prijava v sistem" as UC2
+  usecase "Odjava iz sistema" as UC3
+  usecase "Pregled opravil" as UC4
+  usecase "Dodajanje opravila" as UC5
+  usecase "Urejanje opravila" as UC6
+  usecase "Brisanje opravila" as UC7
+  usecase "Označevanje kot končano" as UC8
+  usecase "Filtriranje opravil" as UC9
+  usecase "Iskanje opravil" as UC10
+  usecase "Validacija podatkov" as UC11
+  usecase "Prikaz podrobnosti opravila" as UC12
+}
+
+' Gost lahko samo registrira in se prijavi
+Guest --> UC1
+Guest --> UC2
+
+' Uporabnik lahko uporablja vse funkcionalnosti
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+User --> UC8
+
+' Include relacije - validacija je vključena pri dodajanju in urejanju
+UC5 ..> UC11 : <<include>>
+UC6 ..> UC11 : <<include>>
+
+' Extend relacije - filtriranje in iskanje razširita pregled opravil
+UC9 ..> UC4 : <<extend>>
+UC10 ..> UC4 : <<extend>>
+
+' Prikaz podrobnosti razširja urejanje
+UC12 ..> UC6 : <<extend>>
+
+@enduml
+```
+
+<p><strong>Legenda:</strong></p>
+<ul>
+  <li><strong>Gost:</strong> Neregistriran obiskovalec, ki se lahko registrira ali prijavi v sistem</li>
+  <li><strong>Uporabnik:</strong> Prijavljen uporabnik z dostopom do vseh funkcionalnosti aplikacije</li>
+  <li><strong>Include (<<include>>):</strong> Validacija podatkov je obvezni del dodajanja in urejanja opravil</li>
+  <li><strong>Extend (<<extend>>):</strong> Filtriranje, iskanje in prikaz podrobnosti so opcijske razširitve osnovnih funkcionalnosti</li>
+</ul>
+
+<p><strong>Glavni primeri uporabe:</strong></p>
+<ol>
+  <li><strong>Registracija</strong> - Gost ustvari nov uporabniški račun</li>
+  <li><strong>Prijava v sistem</strong> - Avtentikacija uporabnika za dostop do aplikacije</li>
+  <li><strong>Odjava iz sistema</strong> - Uporabnik se varno odjavi iz aplikacije</li>
+  <li><strong>Pregled opravil</strong> - Prikaz seznama vseh uporabnikovih opravil</li>
+  <li><strong>Dodajanje opravila</strong> - Ustvarjanje novega opravila z validacijo podatkov</li>
+  <li><strong>Urejanje opravila</strong> - Posodabljanje obstoječega opravila z validacijo podatkov</li>
+  <li><strong>Brisanje opravila</strong> - Odstranitev opravila iz sistema</li>
+  <li><strong>Označevanje kot končano</strong> - Sprememba statusa opravila na končano</li>
+  <li><strong>Filtriranje opravil</strong> - Opcijsko filtriranje seznama po statusu ali drugih kriterijih</li>
+  <li><strong>Iskanje opravil</strong> - Opcijsko iskanje po ključnih besedah</li>
+</ol>
+<hr>
+
 <h2>⚙️ Tehnologije in orodja</h2>
 
 <h3>Frontend</h3>
@@ -82,9 +245,6 @@ Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in Reac
     </tr>
   </tbody>
 </table>
-
-<hr>
-
 
 <h2>📁 Struktura projekta</h2>
 
@@ -232,7 +392,6 @@ Ta projekt vsebuje dve ločeni aplikaciji: backend (Spring Boot, Java) v tasklis
   <li>Pushaj in odpri <strong>Pull Request</strong>.</li>
 </ol>
 
-
 <h3>Pravila</h3>
 <ul>
   <li>Jasna commit sporočila (<code>feat:</code>, <code>fix:</code>, <code>refactor:</code>)</li>
@@ -248,50 +407,3 @@ Ta projekt vsebuje dve ločeni aplikaciji: backend (Spring Boot, Java) v tasklis
   <li><strong>Repozitorij:</strong> https://github.com/bersnakovec/risprojekt</li>
   <li><strong>Težave/ideje:</strong> odpri <em>Issue</em> ali <em>Pull Request</em></li>
 </ul>
-
-<hr>
-
-<h2>Diagram primerov uporabe</h2>
-<img width="1151" height="821" alt="RIS_vaja_5" src="https://github.com/user-attachments/assets/d02ea286-a123-47b5-bba8-d0dfead90772" />
-
-<hr>
-
-<h2>🎯 Vizija projekta</h2>
-<p>
-  Naša vizija je ustvariti preprosto, odzivno in razširljivo aplikacijo za upravljanje nalog, ki bo uporabnikom pomagala organizirati vsakodnevna opravila, povečati produktivnost in izboljšati timsko sodelovanje. Aplikacija je namenjena vsem, ki želijo hitro ustvariti in spremljati seznam nalog brez kompleksnih nastavitev.
-</p>
-<p>
-  Želimo zagotoviti prijazno uporabniško izkušnjo z jasnimi kontrolami za dodajanje, urejanje in filtriranje nalog, prioritizacijo ter možnostjo povezanosti s preprostimi bazo podatkov. V daljšem smislu želimo omogočiti tudi enostavno razširljivost — npr. dodajanje oznak, rokov, obvestil in skupinske rabe.
-</p>
-<p>
-  Cilj je, da aplikacija izboljša uporabniško izkušnjo pri upravljanju nalog z intuitivnim vmesnikom, hitrim odgovorom na uporabniške vnose in jasnim prikazom prioritete ter stanja nalog. S tem želimo pomagati uporabnikom, da hitreje dokončajo svoje obveznosti in lažje sledijo napredku pri večjih projektih.
-</p>
-
-<hr>
-
-<h2>📚 Besednjak</h2>
-<p>Kratek seznam ključnih izrazov in njihov pomen v kontekstu te aplikacije:</p>
-<ul>
-  <li><strong>Naloga (Task)</strong> – osnovni objekt v aplikaciji, ki predstavlja opravilo. V modelu <code>Task.java</code> ima polja <code>id</code>, <code>name</code>, <code>dateDue</code> (rok) in <code>checked</code> (označena kot dokončano).</li>
-  <li><strong>Seznam nalog</strong> – zbirka vseh nalog, ki jih upravljamo v aplikaciji; prikazano na frontend komponenti <code>Tasks</code>.</li>
-  <li><strong>Status / checked</strong> – označuje, ali je naloga že dokončana.</li>
-  <li><strong>Rok (dateDue)</strong> – datum, do katerega naj bi bila naloga opravljena.</li>
-  <li><strong>CRUD</strong> – standardni podatkovni operacije: Create, Read, Update, Delete.</li>
-  <li><strong>REST API</strong> – vmesnik za komunikacijo med frontend in backend.</li>
-  <li><strong>Endpoint</strong> – posamezen URL (npr. <code>/api/tasks</code> ali <code>/api/tasks/{id}</code>) za interakcijo z API-jem.</li>
-  <li><strong>Baza podatkov</strong> – prostor, kjer se shranjujejo vse naloge. V razvoju se uporablja H2, v praksi pa MySQL.</li>
-  <li><strong>Shranjevanje v bazo</strong> – del programa, ki skrbi za branje in zapisovanje podatkov v bazo.</li>
-  <li><strong>Controller</strong> – del programa na strežniku, ki prejme zahtevo iz aplikacije (npr. »prikaži naloge«) in vrne odgovor.</li>
-  <li><strong>Frontend (React)</strong> – uporabniški vmesnik aplikacije, ki uporablja komponente za prikaz in upravljanje nalog.</li>
-  <li><strong>Axios</strong> – orodje, ki frontend-u omogoča pošiljanje zahtevkov na API (npr. dodaj nalogo, izbriši nalogo).</li>
-  <li><strong>CORS</strong> – nastavitev, ki omogoča, da se spletna stran in strežnik lahko pogovarjata med seboj, tudi če sta na različnih naslovih.</li>
-  <li><strong>Iskanje (search)</strong> – možnost filtriranja nalog po imenu.</li>
-</ul>
-
-<hr>
-
-<h2>Podrobni opisi primerov </h2>
-<strong>Datoteka: </strong>
-[opisi_vaja_5.docx](https://github.com/user-attachments/files/23709584/opisi_vaja_5.docx)
-
-
