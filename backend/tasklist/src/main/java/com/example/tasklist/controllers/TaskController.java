@@ -4,6 +4,7 @@ import com.example.tasklist.dao.TaskRepository;
 import com.example.tasklist.models.Task;
 import com.example.tasklist.models.User;
 import com.example.tasklist.service.UserService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,15 +38,15 @@ public class TaskController {
     public List<Task> getAll(@RequestParam(required = false) String search) {
         User user = getAuthenticatedUser();
         if (search != null && !search.trim().isEmpty()) {
-            return repository.findByUserAndNameContainingIgnoreCase(user, search.trim());
+            return repository.findByUsersContainingAndNameContainingIgnoreCase(user, search.trim());
         }
-        return repository.findByUser(user);
+        return repository.findByUsersContaining(user);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getById(@PathVariable Long id) {
         User user = getAuthenticatedUser();
-        return repository.findByIdAndUser(id, user)
+        return repository.findByIdAndUsersContaining(id, user)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -53,7 +54,7 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<Task> create(@RequestBody Task task) {
         User user = getAuthenticatedUser();
-        task.setUser(user);
+        task.getUsers().add(user);
         Task saved = repository.save(task);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -61,10 +62,11 @@ public class TaskController {
     @PutMapping("/{id}")
     public ResponseEntity<Task> update(@PathVariable Long id, @RequestBody Task task) {
         User user = getAuthenticatedUser();
-        return repository.findByIdAndUser(id, user).map(existing -> {
+        return repository.findByIdAndUsersContaining(id, user).map(existing -> {
             existing.setName(task.getName());
             existing.setDateDue(task.getDateDue());
             existing.setChecked(task.isChecked());
+            existing.setUsers(task.getUsers());
             Task updated = repository.save(existing);
             return ResponseEntity.ok(updated);
         }).orElse(ResponseEntity.notFound().build());
@@ -73,11 +75,45 @@ public class TaskController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         User user = getAuthenticatedUser();
-        if (!repository.findByIdAndUser(id, user).isPresent()) {
+        if (!repository.findByIdAndUsersContaining(id, user).isPresent()) {
             return ResponseEntity.notFound().build();
         }
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Add user to a task by username
+    @PostMapping("/{id}/addUser")
+    public ResponseEntity<Task> addUserToTask(@PathVariable Long id, @RequestParam String username) {
+        User userToAdd;
+        try {
+            userToAdd = userService.findByUsername(username);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        User currentUser = getAuthenticatedUser();
+        return repository.findByIdAndUsersContaining(id, currentUser).map(task -> {
+            task.getUsers().add(userToAdd);
+            Task updated = repository.save(task);
+            return ResponseEntity.ok(updated);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // Remove user from a task by username
+    @PostMapping("/{id}/removeUser")
+    public ResponseEntity<Task> removeUserFromTask(@PathVariable Long id, @RequestParam String username) {
+        User userToRemove;
+        try {
+            userToRemove = userService.findByUsername(username);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        User currentUser = getAuthenticatedUser();
+        return repository.findByIdAndUsersContaining(id, currentUser).map(task -> {
+            task.getUsers().remove(userToRemove);
+            Task updated = repository.save(task);
+            return ResponseEntity.ok(updated);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
 }

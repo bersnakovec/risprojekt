@@ -15,13 +15,15 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t WHERE LOWER(t.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     List<Task> findByNameContainingIgnoreCase(@Param("searchTerm") String searchTerm);
 
-    // Find all tasks for a specific user
-    List<Task> findByUser(User user);
+    // Find all tasks where user is assigned
+    @Query("SELECT t FROM Task t JOIN t.users u WHERE u = :user")
+    List<Task> findByUsersContaining(@Param("user") User user);
 
     // Find tasks by user and search term
-    @Query("SELECT t FROM Task t WHERE t.user = :user AND LOWER(t.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
-    List<Task> findByUserAndNameContainingIgnoreCase(@Param("user") User user, @Param("searchTerm") String searchTerm);
+    @Query("SELECT t FROM Task t JOIN t.users u WHERE u = :user AND LOWER(t.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    List<Task> findByUsersContainingAndNameContainingIgnoreCase(@Param("user") User user, @Param("searchTerm") String searchTerm);
 
     // Find task by id and user (for security)
-    Optional<Task> findByIdAndUser(Long id, User user);
+    @Query("SELECT t FROM Task t JOIN t.users u WHERE t.id = :id AND u = :user")
+    Optional<Task> findByIdAndUsersContaining(@Param("id") Long id, @Param("user") User user);
 }

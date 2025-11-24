@@ -4,6 +4,29 @@ import './Tasks.css';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
+  const [usernames, setUsernames] = useState({}); // {taskId: inputValue}
+    // Add user to a task
+    async function handleAddUser(taskId) {
+      const username = usernames[taskId];
+      if (!username || !username.trim()) return;
+      try {
+        const res = await api.post(`/tasks/${taskId}/addUser`, null, { params: { username: username.trim() } });
+        setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
+        setUsernames((prev) => ({ ...prev, [taskId]: '' }));
+      } catch (e) {
+        setError('Could not add user');
+      }
+    }
+
+    // Remove user from a task
+    async function handleRemoveUser(taskId, username) {
+      try {
+        const res = await api.post(`/tasks/${taskId}/removeUser`, null, { params: { username } });
+        setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
+      } catch (e) {
+        setError('Could not remove user');
+      }
+    }
   const [name, setName] = useState('');
   const [dateDue, setDateDue] = useState('');
   const [search, setSearch] = useState('');
@@ -89,15 +112,40 @@ export default function Tasks() {
         <ul className="list-group">
           {tasks.length === 0 && <li className="list-group-item text-muted">No tasks yet</li>}
           {tasks.map((t) => (
-            <li key={t.id} className="list-group-item d-flex justify-content-between align-items-center">
+            <li key={t.id} className="list-group-item">
               <div className="d-flex align-items-center gap-3">
                 <input className="form-check-input me-2" type="checkbox" checked={!!t.checked} onChange={() => toggleChecked(t)} />
                 <div>
                   <div className={t.checked ? 'text-decoration-line-through text-muted' : ''}>{t.name}</div>
                   <small className="text-muted">{t.dateDue || ''}</small>
+                  {/* Show assigned users */}
+                  {Array.isArray(t.users) && t.users.length > 0 && (
+                    <div className="mt-1">
+                      <span className="fw-bold">Assigned users:</span>
+                      {t.users.map((u) => (
+                        <span key={u.id} className="badge bg-secondary ms-1">
+                          {u.username}
+                          <button type="button" className="btn btn-sm btn-light ms-1" style={{padding: '0 4px'}} onClick={() => handleRemoveUser(t.id, u.username)} title="Remove user">×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {/* Add user form */}
+                  <div className="input-group input-group-sm mt-2" style={{maxWidth: '260px'}}>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Add user by username"
+                      value={usernames[t.id] || ''}
+                      onChange={(e) => setUsernames((prev) => ({ ...prev, [t.id]: e.target.value }))}
+                    />
+                    <button className="btn btn-outline-success" type="button" onClick={() => handleAddUser(t.id)}>
+                      Add
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="btn-group btn-group-sm" role="group">
+              <div className="btn-group btn-group-sm float-end" role="group">
                 <button className="btn btn-primary" onClick={() => handleEdit(t)}>Edit</button>
                 <button className="btn btn-danger" onClick={() => handleDelete(t.id)}>Delete</button>
               </div>

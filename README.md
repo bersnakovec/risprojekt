@@ -28,6 +28,10 @@ Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in Reac
       <td>Osnovna enota aplikacije - naloga ali aktivnost, ki jo uporabnik želi izpolniti. Vsebuje naziv, opis in status.</td>
     </tr>
     <tr>
+      <td><strong>Assigned users</strong></td>
+      <td>Vsi uporabniki, dodeljeni enem opravilu</td>
+    </tr>
+    <tr>
       <td><strong>Backend</strong></td>
       <td>Strežniška stran aplikacije, napisana v Java Spring Boot, ki upravlja poslovno logiko, dostop do podatkov in REST API.</td>
     </tr>
@@ -48,36 +52,8 @@ Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in Reac
       <td>Sloj za dostop do podatkov (Data Access Object), ki omogoča operacije CRUD nad bazo podatkov.</td>
     </tr>
     <tr>
-      <td><strong>Model (Entity)</strong></td>
-      <td>JPA entiteta, ki predstavlja tabelo v bazi podatkov. Primer: <code>Task.java</code> predstavlja tabelo z opravili.</td>
-    </tr>
-    <tr>
-      <td><strong>JPA (Java Persistence API)</strong></td>
-      <td>Standard za objektno-relacijsko preslikavo (ORM) v Javi, ki omogoča delo s podatkovno bazo preko Java objektov.</td>
-    </tr>
-    <tr>
-      <td><strong>Hibernate</strong></td>
-      <td>Implementacija JPA standarda, ki avtomatizira preslikavo med Java razredi in tabelami v bazi.</td>
-    </tr>
-    <tr>
-      <td><strong>Maven</strong></td>
-      <td>Orodje za gradnjo projekta in upravljanje odvisnosti v Java projektih.</td>
-    </tr>
-    <tr>
       <td><strong>MySQL</strong></td>
       <td>Relacijska podatkovna baza, uporabljena za trajno shranjevanje opravil v produkcijskem okolju.</td>
-    </tr>
-    <tr>
-      <td><strong>H2 Database</strong></td>
-      <td>Vgrajena spominska baza podatkov, primerna za razvoj in testiranje brez potrebe po namestitvi MySQL.</td>
-    </tr>
-    <tr>
-      <td><strong>Axios</strong></td>
-      <td>JavaScript knjižnica za izvajanje HTTP zahtev iz frontend-a proti REST API-ju na backend-u.</td>
-    </tr>
-    <tr>
-      <td><strong>React Component</strong></td>
-      <td>Ponovno uporabna gradnika uporabniškega vmesnika v React-u. Primer: <code>TaskList</code>, <code>Navbar</code>.</td>
     </tr>
     <tr>
       <td><strong>CRUD operacije</strong></td>

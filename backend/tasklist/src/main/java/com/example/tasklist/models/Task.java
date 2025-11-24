@@ -18,19 +18,22 @@ public class Task {
 
     private boolean checked;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
-    private User user;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "task_users",
+        joinColumns = @JoinColumn(name = "task_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private java.util.Set<User> users = new java.util.HashSet<>();
 
     public Task() {
     }
 
-    public Task(String name, LocalDate dateDue, boolean checked, User user) {
+    public Task(String name, LocalDate dateDue, boolean checked, java.util.Set<User> users) {
         this.name = name;
         this.dateDue = dateDue;
         this.checked = checked;
-        this.user = user;
+        this.users = users;
     }
 
     public Long getId() {
@@ -65,12 +68,16 @@ public class Task {
         this.checked = checked;
     }
 
-    public User getUser() {
-        return user;
+    public java.util.Set<User> getUsers() {
+        return users;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(java.util.Set<User> users) {
+        this.users = users;
+    }
+
+    public void addUser(User user) {
+        this.users.add(user);
     }
 
 }
