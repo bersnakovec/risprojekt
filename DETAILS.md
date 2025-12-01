@@ -7,6 +7,91 @@
 
 ![R_diagram](https://github.com/user-attachments/assets/794b4945-345e-4544-b5c6-c452fd070f6d)
 
+---
+
+## Opisi razredov in metod
+
+### Task
+Model za opravilo. Hrani podatke o nalogi, roku, statusu in dodeljenih uporabnikih.
+Metode:
+- getId / setId: dobi/nastavi ID naloge
+- getName / setName: dobi/nastavi ime naloge
+- getDateDue / setDateDue: dobi/nastavi rok
+- isChecked / setChecked: preveri/nastavi ali je naloga opravljena
+- getUsers / setUsers: dobi/nastavi dodeljene uporabnike
+- getStatus / setStatus: dobi/nastavi status opravila
+- addUser: doda novega uporabnika k opravilu
+
+### Invitation
+Model za obdelavo povabil drugih uporabnikov k opravilu
+Metode:
+- accept: sprejem povabila
+- decline: zavrnitev povabila
+
+### User
+Model za uporabnika. Hrani podatke o uporabniškem imenu, emailu, geslu, vlogi.
+Metode:
+- getId / setId: dobi/nastavi ID uporabnika
+- getUsername / setUsername: dobi/nastavi uporabniško ime
+- getEmail / setEmail: dobi/nastavi email
+- getPassword / setPassword: dobi/nastavi geslo
+- getRole / setRole: dobi/nastavi vlogo
+- getCreatedAt / setCreatedAt: dobi/nastavi čas ustvarjanja
+- getAuthorities: vrne vloge za Spring Security
+- isAccountNonExpired, isAccountNonLocked, isCredentialsNonExpired, isEnabled: preveri status računa
+
+### TaskController
+REST API za upravljanje nalog. Omogoča pridobivanje, urejanje, brisanje, dodeljevanje uporabnikov.
+Metode:
+- getAll: vrne vse naloge za prijavljenega uporabnika
+- getById: vrne podrobnosti naloge
+- create: ustvari novo nalogo
+- update: posodobi nalogo
+- delete: izbriše nalogo
+- addUserToTask: doda uporabnika k nalogi
+- removeUserFromTask: odstrani uporabnika iz naloge
+
+### UserService
+Logika za delo z uporabniki (registracija, prijava, iskanje).
+Metode:
+- loadUserByUsername: poišče uporabnika za prijavo
+- registerUser: ustvari novega uporabnika
+- findByUsername: poišče uporabnika po imenu
+
+### TaskRepository
+Vmesnik za dostop do podatkov o nalogah.
+Metode:
+- findByUsersContaining: najde naloge, kjer je uporabnik dodeljen
+- findByUsersContainingAndNameContainingIgnoreCase: najde naloge po uporabniku in iskalnem nizu
+- findByIdAndUsersContaining: najde nalogo po ID in uporabniku
+
+### UserRepository
+Vmesnik za dostop do podatkov o uporabnikih.
+Metode:
+- findByUsername: poišče uporabnika po imenu
+- findByEmail: poišče uporabnika po emailu
+- existsByUsername: preveri ali obstaja uporabnik s tem imenom
+- existsByEmail: preveri ali obstaja uporabnik s tem emailom
+
+### AuthController
+API za prijavo in registracijo uporabnikov.
+Metode:
+- login: prijava uporabnika
+- register: registracija novega uporabnika
+
+### JwtUtil
+Pomaga pri generiranju in preverjanju JWT žetonov.
+Metode:
+- generateToken: ustvari JWT žeton
+- validateToken: preveri veljavnost žetona
+- extractUsername: izlušči uporabniško ime iz žetona
+
+### SecurityConfig
+Nastavitve varnosti za aplikacijo (Spring Security).
+
+### JwtAuthenticationFilter
+Filter za preverjanje JWT žetonov v zahtevkih.
+
 <hr>
 
 <h1>Podrobni opisi primerov </h1>
