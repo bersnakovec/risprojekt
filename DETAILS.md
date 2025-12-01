@@ -5,6 +5,8 @@
 
 <h1>Razredni diagram</h1>
 
+![R_diagram](https://github.com/user-attachments/assets/794b4945-345e-4544-b5c6-c452fd070f6d)
+
 <hr>
 
 <h1>Podrobni opisi primerov </h1>
