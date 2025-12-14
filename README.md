@@ -7,6 +7,8 @@ Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in Reac
 
 [Več podrobnosti ](DETAILS.md)
 
+[Poročilo testiranja](testiranje/porocilo_testiranja.md)
+
 <hr>
 
 <h2>⚙️ Tehnologije in orodja</h2>
