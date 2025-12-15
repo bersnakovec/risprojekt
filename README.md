@@ -7,7 +7,7 @@ Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in Reac
 
 [Več podrobnosti ](DETAILS.md)
 
-[Poročilo testiranja](testiranje/porocilo_testiranja.md)
+[Poročilo testiranja](testiranje/porocilo_testiranja.md) - **Nov:** Dodani unit testi za TaskController
 
 <hr>
 
@@ -34,6 +34,7 @@ Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in Reac
       <li>@testing-library/user-event <code>^13.5.0</code></li>
       <li>@testing-library/dom <code>^10.4.1</code></li>
       <li>web-vitals <code>^2.1.4</code></li>
+      <li>Jest</li>
     </ul>
   </li>
 </ul>
@@ -49,7 +50,9 @@ Celostna aplikacija za upravljanje opravil z Java Spring Boot backend-om in Reac
       <li>com.h2database:h2 – spominska baza za razvoj</li>
       <li>com.mysql:mysql-connector-j – povezava z MySQL</li>
       <li>org.projectlombok:lombok – avtomatizacija getterjev/setterjev</li>
-      <li>spring-boot-starter-test – testiranje</li>
+      <li>spring-boot-starter-test – testiranje (JUnit 5, Mockito, MockMvc)</li>
+      <li>spring-boot-starter-security – JWT avtentikacija</li>
+      <li>io.jsonwebtoken:jjwt-* – JWT podpora</li>
     </ul>
   </li>
   <li><strong>Gradnik projekta:</strong> Apache Maven</li>
@@ -104,16 +107,29 @@ RISPROJEKT/
 │     ├─ src/
 │     │  ├─ main/
 │     │  │  ├─ java/com/example/tasklist/
-│     │  │  │  ├─ controllers/        # REST kontrolerji (TaskController)
-│     │  │  │  ├─ dao/                # Dostop do baze (TaskRepository)
-│     │  │  │  ├─ models/             # JPA entitete (Task)
+│     │  │  │  ├─ controllers/        # REST kontrolerji (TaskController, AuthController)
+│     │  │  │  ├─ dao/                # Dostop do baze (TaskRepository, UserRepository)
+│     │  │  │  ├─ models/             # JPA entitete (Task, User)
+│     │  │  │  ├─ service/            # Poslovna logika (UserService)
+│     │  │  │  ├─ security/           # Varnost (SecurityConfig, JwtAuthenticationFilter)
+│     │  │  │  ├─ util/               # Pomožne funkcije (JwtUtil)
+│     │  │  │  ├─ dto/                # Data Transfer Objects
 │     │  │  │  └─ TasklistApplication.java  # Glavni Spring Boot razred
 │     │  │  └─ resources/
 │     │  │     └─ application.properties   # Nastavitve baze, port itd.
 │     │  └─ test/
-│     │     └─ java/com/example/tasklist/TasklistApplicationTests.java
+│     │     └─ java/com/example/tasklist/
+│     │        ├─ TasklistApplicationTests.java
+│     │        ├─ service/
+│     │        │  ├─ UserServiceTest.java       # Unit testi za UserService
+│     │        │  └─ AuthControllerTest.java    # Integration testi za AuthController
+│     │        └─ controllers/
+│     │           └─ TaskControllerTest.java    # Integration testi za TaskController
 │     ├─ pom.xml
 │     └─ (ostale Maven datoteke)
+│
+├─ testiranje/                          # 📋 Dokumentacija testiranja
+│  └─ porocilo_testiranja.md           # Poročilo o unit testih
 │
 └─ frontend/
    ├─ public/
