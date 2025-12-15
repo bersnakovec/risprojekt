@@ -47,6 +47,7 @@ public class User implements UserDetails {
 
     // UserDetails implementation
     @Override
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
     }
