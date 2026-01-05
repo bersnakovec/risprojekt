@@ -3,6 +3,7 @@ package com.example.tasklist.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
@@ -17,6 +18,10 @@ public class Task {
     private LocalDate dateDue;
 
     private boolean checked;
+
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -33,6 +38,15 @@ public class Task {
         this.name = name;
         this.dateDue = dateDue;
         this.checked = checked;
+        this.users = users;
+    }
+
+    public Task(String name, LocalDate dateDue, boolean checked, LocalDateTime startTime, LocalDateTime endTime, java.util.Set<User> users) {
+        this.name = name;
+        this.dateDue = dateDue;
+        this.checked = checked;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.users = users;
     }
 
@@ -78,6 +92,22 @@ public class Task {
 
     public void addUser(User user) {
         this.users.add(user);
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
 }

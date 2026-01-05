@@ -29,6 +29,8 @@ export default function Tasks() {
     }
   const [name, setName] = useState('');
   const [dateDue, setDateDue] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -48,11 +50,17 @@ export default function Tasks() {
   async function handleAdd(e) {
     e.preventDefault();
     if (!name.trim()) return;
-    const payload = { name: name.trim(), dateDue: dateDue || null, checked: false };
+    const payload = {
+      name: name.trim(),
+      dateDue: dateDue || null,
+      checked: false,
+      startTime: startTime || null,
+      endTime: endTime || null
+    };
     try {
       const res = await api.post('/tasks', payload);
       setTasks((t) => [...t, res.data]);
-      setName(''); setDateDue('');
+      setName(''); setDateDue(''); setStartTime(''); setEndTime('');
     } catch (e) { setError('Could not create task'); }
   }
 
@@ -74,8 +82,16 @@ export default function Tasks() {
     const newName = window.prompt('Edit task name', task.name);
     if (newName == null) return;
     const newDate = window.prompt('Edit due date (YYYY-MM-DD) or empty', task.dateDue || '');
+    const newStartTime = window.prompt('Edit start time (YYYY-MM-DDTHH:MM) or empty', task.startTime || '');
+    const newEndTime = window.prompt('Edit end time (YYYY-MM-DDTHH:MM) or empty', task.endTime || '');
     try {
-      const updated = { ...task, name: newName, dateDue: newDate || null };
+      const updated = {
+        ...task,
+        name: newName,
+        dateDue: newDate || null,
+        startTime: newStartTime || null,
+        endTime: newEndTime || null
+      };
       const res = await api.put(`/tasks/${task.id}`, updated);
       setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
     } catch (e) { setError('Could not edit task'); }
@@ -97,10 +113,16 @@ export default function Tasks() {
       </div>
 
       <form className="mb-3" onSubmit={handleAdd}>
-        <div className="input-group">
+        <div className="input-group mb-2">
           <input type="text" className="form-control" placeholder="New task" value={name} onChange={(e) => setName(e.target.value)} />
           <input type="date" className="form-control" style={{maxWidth: '180px'}} value={dateDue} onChange={(e) => setDateDue(e.target.value)} />
           <button className="btn btn-success" type="submit">Add</button>
+        </div>
+        <div className="input-group">
+          <span className="input-group-text">Start</span>
+          <input type="datetime-local" className="form-control" style={{maxWidth: '220px'}} value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+          <span className="input-group-text">End</span>
+          <input type="datetime-local" className="form-control" style={{maxWidth: '220px'}} value={endTime} onChange={(e) => setEndTime(e.target.value)} />
         </div>
       </form>
 
@@ -117,7 +139,11 @@ export default function Tasks() {
                 <input className="form-check-input me-2" type="checkbox" checked={!!t.checked} onChange={() => toggleChecked(t)} />
                 <div>
                   <div className={t.checked ? 'text-decoration-line-through text-muted' : ''}>{t.name}</div>
-                  <small className="text-muted">{t.dateDue || ''}</small>
+                  <small className="text-muted">
+                    {t.dateDue && <span>Due: {t.dateDue}</span>}
+                    {t.startTime && <span className="ms-2">Start: {new Date(t.startTime).toLocaleString()}</span>}
+                    {t.endTime && <span className="ms-2">End: {new Date(t.endTime).toLocaleString()}</span>}
+                  </small>
                   {/* Show assigned users */}
                   {Array.isArray(t.users) && t.users.length > 0 && (
                     <div className="mt-1">

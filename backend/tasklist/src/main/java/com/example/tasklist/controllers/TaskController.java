@@ -67,6 +67,8 @@ public class TaskController {
             existing.setDateDue(task.getDateDue());
             existing.setChecked(task.isChecked());
             existing.setUsers(task.getUsers());
+            existing.setStartTime(task.getStartTime());
+            existing.setEndTime(task.getEndTime());
             Task updated = repository.save(existing);
             return ResponseEntity.ok(updated);
         }).orElse(ResponseEntity.notFound().build());
