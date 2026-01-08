@@ -18,6 +18,11 @@ public class Task {
 
     private boolean checked;
 
+    // File attachment metadata
+    private String fileName;
+    private String fileType;
+    private String filePath;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "task_users",
@@ -78,6 +83,30 @@ public class Task {
 
     public void addUser(User user) {
         this.users.add(user);
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
 }

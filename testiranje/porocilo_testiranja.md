@@ -72,7 +72,7 @@ Ti testi so pomembni, ker zagotavljajo, da lahko več uporabnikov sodeluje pri o
 
 <li>Test <code>AuthControllerTest</code> potrjuje pravilno delovanje prijavnega mehanizma, saj ob uspešni prijavi vrača ustrezen HTTP status in avtentikacijski žeton. Negativni scenarij preverja, da sistem ob napačnih prijavnih podatkih pravilno zavrne dostop in vrne statusno kodo 401, kar prispeva k varnosti aplikacije.</li>
 
-<li>Testa v <code>TaskSharingControllerTest</code> potrjujeta, da lahko uporabnik uspešno doda drugega uporabnika k nalogi in da sistem pravilno obravnava skupno lastništvo nalog in da lahko vsak uporabnik, ki je del skupne naloge, to nalogo tudi uspešno označi kot opravljeno.</li>
+<li>Testa v <code>TaskControllerTest</code> potrjujeta, da lahko uporabnik uspešno doda drugega uporabnika k nalogi in da sistem pravilno obravnava skupno lastništvo nalog in da lahko vsak uporabnik, ki je del skupne naloge, to nalogo tudi uspešno označi kot opravljeno.</li>
 </ul>
 
 <hr>
