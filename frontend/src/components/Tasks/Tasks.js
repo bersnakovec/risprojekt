@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/Api';
+import FileUpload from '../FileUpload/FileUpload';
 import './Tasks.css';
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [usernames, setUsernames] = useState({}); // {taskId: inputValue}
+  const [expandedTaskId, setExpandedTaskId] = useState(null); // Track which task's files are shown
     // Add user to a task
     async function handleAddUser(taskId) {
       const username = usernames[taskId];
@@ -35,6 +37,7 @@ export default function Tasks() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { loadTasks(); }, [search]); // reload when search changes
 
   async function loadTasks() {
@@ -95,6 +98,10 @@ export default function Tasks() {
       const res = await api.put(`/tasks/${task.id}`, updated);
       setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
     } catch (e) { setError('Could not edit task'); }
+  }
+
+  function toggleFiles(taskId) {
+    setExpandedTaskId(expandedTaskId === taskId ? null : taskId);
   }
 
   return (
@@ -174,7 +181,16 @@ export default function Tasks() {
               <div className="btn-group btn-group-sm float-end" role="group">
                 <button className="btn btn-primary" onClick={() => handleEdit(t)}>Edit</button>
                 <button className="btn btn-danger" onClick={() => handleDelete(t.id)}>Delete</button>
+                <button className="btn btn-info" onClick={() => toggleFiles(t.id)}>
+                  {expandedTaskId === t.id ? 'Hide Files' : 'Files'}
+                </button>
               </div>
+              {/* File Upload Section */}
+              {expandedTaskId === t.id && (
+                <div className="mt-3">
+                  <FileUpload taskId={t.id} />
+                </div>
+              )}
             </li>
           ))}
         </ul>
