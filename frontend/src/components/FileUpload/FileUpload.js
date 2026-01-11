@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/Api';
+import FilePreview from '../FilePreview/FilePreview';
 import './FileUpload.css';
 
 /**
@@ -11,6 +12,7 @@ const FileUpload = ({ taskId }) => {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [previewFile, setPreviewFile] = useState(null);
 
     // Load existing files when component mounts or taskId changes
     useEffect(() => {
@@ -145,6 +147,20 @@ const FileUpload = ({ taskId }) => {
         return contentType && contentType.startsWith('image/');
     };
 
+    /**
+     * Handle file preview
+     */
+    const handlePreview = (file) => {
+        setPreviewFile(file);
+    };
+
+    /**
+     * Close file preview
+     */
+    const handleClosePreview = () => {
+        setPreviewFile(null);
+    };
+
     return (
         <div className="file-upload-container">
             <h4>File Attachments</h4>
@@ -199,6 +215,13 @@ const FileUpload = ({ taskId }) => {
                                 </div>
                                 <div className="file-actions">
                                     <button
+                                        onClick={() => handlePreview(file)}
+                                        className="preview-button"
+                                        title="Preview"
+                                    >
+                                        👁️
+                                    </button>
+                                    <button
                                         onClick={() => handleDownload(file.id, file.originalFilename)}
                                         className="download-button"
                                         title="Download"
@@ -218,6 +241,15 @@ const FileUpload = ({ taskId }) => {
                     </ul>
                 )}
             </div>
+
+            {/* File Preview Modal */}
+            {previewFile && (
+                <FilePreview
+                    file={previewFile}
+                    taskId={taskId}
+                    onClose={handleClosePreview}
+                />
+            )}
         </div>
     );
 };

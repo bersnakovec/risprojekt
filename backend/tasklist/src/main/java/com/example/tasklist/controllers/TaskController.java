@@ -192,6 +192,35 @@ public class TaskController {
     }
 
     /**
+     * Preview a file attachment (inline display)
+     */
+    @GetMapping("/{taskId}/files/{fileId}/preview")
+    public ResponseEntity<Resource> previewFile(@PathVariable Long taskId, @PathVariable Long fileId) {
+        try {
+            User currentUser = getAuthenticatedUser();
+            Task task = repository.findByIdAndUsersContaining(taskId, currentUser)
+                    .orElseThrow(() -> new RuntimeException("Task not found or access denied"));
+
+            TaskAttachment attachment = fileStorageService.getAttachment(fileId);
+
+            // Verify the attachment belongs to this task
+            if (!attachment.getTask().getId().equals(taskId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            Resource resource = fileStorageService.loadFileAsResource(attachment.getFilename());
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(attachment.getContentType()))
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\"" + attachment.getOriginalFilename() + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
      * Delete a file attachment
      */
     @DeleteMapping("/{taskId}/files/{fileId}")
