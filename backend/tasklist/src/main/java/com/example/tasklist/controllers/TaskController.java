@@ -55,6 +55,7 @@ public class TaskController {
     public ResponseEntity<Task> create(@RequestBody Task task) {
         User user = getAuthenticatedUser();
         task.getUsers().add(user);
+        // completionTimeMinutes is set from frontend if provided
         Task saved = repository.save(task);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -67,9 +68,27 @@ public class TaskController {
             existing.setDateDue(task.getDateDue());
             existing.setChecked(task.isChecked());
             existing.setUsers(task.getUsers());
+            existing.setCompletionTimeMinutes(task.getCompletionTimeMinutes());
             Task updated = repository.save(existing);
             return ResponseEntity.ok(updated);
         }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // Endpoint to get average completion time for authenticated user
+    @GetMapping("/average-completion-time")
+    public ResponseEntity<Double> getAverageCompletionTime() {
+        User user = getAuthenticatedUser();
+        List<Task> tasks = repository.findByUsersContaining(user);
+        // Only consider tasks with completionTimeMinutes set and checked=true
+        List<Integer> times = tasks.stream()
+            .filter(t -> t.isChecked() && t.getCompletionTimeMinutes() != null)
+            .map(Task::getCompletionTimeMinutes)
+            .toList();
+        if (times.isEmpty()) {
+            return ResponseEntity.ok(0.0);
+        }
+        double avg = times.stream().mapToInt(Integer::intValue).average().orElse(0.0);
+        return ResponseEntity.ok(avg);
     }
 
     @DeleteMapping("/{id}")

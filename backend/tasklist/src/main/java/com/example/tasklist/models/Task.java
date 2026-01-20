@@ -23,6 +23,8 @@ public class Task {
     private String fileType;
     private String filePath;
 
+    // Time to complete the task (in minutes)
+    private Integer completionTimeMinutes;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "task_users",
@@ -109,4 +111,12 @@ public class Task {
         this.filePath = filePath;
     }
 
+    
+    public Integer getCompletionTimeMinutes() {
+        return completionTimeMinutes;
+    }
+
+    public void setCompletionTimeMinutes(Integer completionTimeMinutes) {
+        this.completionTimeMinutes = completionTimeMinutes;
+    }
 }
