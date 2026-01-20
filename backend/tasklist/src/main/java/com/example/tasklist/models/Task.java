@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "tasks")
@@ -19,9 +20,24 @@ public class Task {
 
     private boolean checked;
 
-    private LocalDateTime startTime;
+    // Date and time fields (separated for better UX)
+    private LocalDate startDate;
+    private LocalTime startTime;
+    private LocalDate endDate;
+    private LocalTime endTime;
 
-    private LocalDateTime endTime;
+    // File attachment metadata (deprecated - now using TaskAttachment entity)
+    private String fileName;
+    private String fileType;
+    private String filePath;
+
+    // Time to complete the task (in minutes)
+    private Integer completionTimeMinutes;
+
+    // Task complexity and category
+    @Enumerated(EnumType.STRING)
+    private TaskComplexity complexity;
+    private String category;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -41,14 +57,6 @@ public class Task {
         this.users = users;
     }
 
-    public Task(String name, LocalDate dateDue, boolean checked, LocalDateTime startTime, LocalDateTime endTime, java.util.Set<User> users) {
-        this.name = name;
-        this.dateDue = dateDue;
-        this.checked = checked;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.users = users;
-    }
 
     public Long getId() {
         return id;
@@ -94,20 +102,83 @@ public class Task {
         this.users.add(user);
     }
 
-    public LocalDateTime getStartTime() {
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public Integer getCompletionTimeMinutes() {
+        return completionTimeMinutes;
+    }
+
+    public void setCompletionTimeMinutes(Integer completionTimeMinutes) {
+        this.completionTimeMinutes = completionTimeMinutes;
+    }
+
+    public TaskComplexity getComplexity() {
+        return complexity;
+    }
+
+    public void setComplexity(TaskComplexity complexity) {
+        this.complexity = complexity;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }

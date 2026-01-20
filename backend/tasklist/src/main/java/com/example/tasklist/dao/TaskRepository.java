@@ -1,6 +1,7 @@
 package com.example.tasklist.dao;
 
 import com.example.tasklist.models.Task;
+import com.example.tasklist.models.TaskComplexity;
 import com.example.tasklist.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,16 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     // Find task by id and user (for security)
     @Query("SELECT t FROM Task t JOIN t.users u WHERE t.id = :id AND u = :user")
     Optional<Task> findByIdAndUsersContaining(@Param("id") Long id, @Param("user") User user);
+
+    // Advanced search with filters
+    @Query("SELECT t FROM Task t JOIN t.users u WHERE u = :user " +
+           "AND (:searchTerm IS NULL OR LOWER(t.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) " +
+           "AND (:complexity IS NULL OR t.complexity = :complexity) " +
+           "AND (:category IS NULL OR LOWER(t.category) LIKE LOWER(CONCAT('%', :category, '%')))")
+    List<Task> findByUserWithFilters(
+        @Param("user") User user,
+        @Param("searchTerm") String searchTerm,
+        @Param("complexity") TaskComplexity complexity,
+        @Param("category") String category
+    );
 }

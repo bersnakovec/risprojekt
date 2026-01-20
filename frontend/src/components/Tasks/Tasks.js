@@ -7,47 +7,77 @@ export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [usernames, setUsernames] = useState({}); // {taskId: inputValue}
   const [expandedTaskId, setExpandedTaskId] = useState(null); // Track which task's files are shown
-    // Add user to a task
-    async function handleAddUser(taskId) {
-      const username = usernames[taskId];
-      if (!username || !username.trim()) return;
-      try {
-        const res = await api.post(`/tasks/${taskId}/addUser`, null, { params: { username: username.trim() } });
-        setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
-        setUsernames((prev) => ({ ...prev, [taskId]: '' }));
-      } catch (e) {
-        setError('Could not add user');
-      }
-    }
 
-    // Remove user from a task
-    async function handleRemoveUser(taskId, username) {
-      try {
-        const res = await api.post(`/tasks/${taskId}/removeUser`, null, { params: { username } });
-        setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
-      } catch (e) {
-        setError('Could not remove user');
-      }
-    }
+  // Form fields
   const [name, setName] = useState('');
   const [dateDue, setDateDue] = useState('');
+  const [startDate, setStartDate] = useState('');
   const [startTime, setStartTime] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [complexity, setComplexity] = useState('');
+  const [category, setCategory] = useState('');
+  const [completionTime, setCompletionTime] = useState('');
+
+  // Search and filter states
   const [search, setSearch] = useState('');
+  const [filterComplexity, setFilterComplexity] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [averageTime, setAverageTime] = useState(null);
+
+  // Add user to a task
+  async function handleAddUser(taskId) {
+    const username = usernames[taskId];
+    if (!username || !username.trim()) return;
+    try {
+      const res = await api.post(`/tasks/${taskId}/addUser`, null, { params: { username: username.trim() } });
+      setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
+      setUsernames((prev) => ({ ...prev, [taskId]: '' }));
+    } catch (e) {
+      setError('Could not add user');
+    }
+  }
+
+  // Remove user from a task
+  async function handleRemoveUser(taskId, username) {
+    try {
+      const res = await api.post(`/tasks/${taskId}/removeUser`, null, { params: { username } });
+      setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
+    } catch (e) {
+      setError('Could not remove user');
+    }
+  }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { loadTasks(); }, [search]); // reload when search changes
+  useEffect(() => {
+    loadTasks();
+    loadAverageTime();
+  }, [search, filterComplexity, filterCategory]); // reload when filters change
 
   async function loadTasks() {
     setLoading(true); setError(null);
     try {
-      const res = await api.get('/tasks', { params: { search } });
+      const params = {};
+      if (search) params.search = search;
+      if (filterComplexity) params.complexity = filterComplexity;
+      if (filterCategory) params.category = filterCategory;
+      const res = await api.get('/tasks', { params });
       setTasks(res.data || []);
     } catch (e) {
       setError('Could not load tasks');
     } finally { setLoading(false); }
+  }
+
+  async function loadAverageTime() {
+    try {
+      const res = await api.get('/tasks/average-completion-time');
+      setAverageTime(res.data);
+    } catch (e) {
+      setAverageTime(null);
+    }
   }
 
   async function handleAdd(e) {
@@ -57,13 +87,19 @@ export default function Tasks() {
       name: name.trim(),
       dateDue: dateDue || null,
       checked: false,
+      startDate: startDate || null,
       startTime: startTime || null,
-      endTime: endTime || null
+      endDate: endDate || null,
+      endTime: endTime || null,
+      complexity: complexity || null,
+      category: category.trim() || null,
+      completionTimeMinutes: completionTime ? parseInt(completionTime) : null
     };
     try {
       const res = await api.post('/tasks', payload);
       setTasks((t) => [...t, res.data]);
-      setName(''); setDateDue(''); setStartTime(''); setEndTime('');
+      setName(''); setDateDue(''); setStartDate(''); setStartTime('');
+      setEndDate(''); setEndTime(''); setComplexity(''); setCategory(''); setCompletionTime('');
     } catch (e) { setError('Could not create task'); }
   }
 
@@ -72,28 +108,42 @@ export default function Tasks() {
       const updated = { ...task, checked: !task.checked };
       const res = await api.put(`/tasks/${task.id}`, updated);
       setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
+      await loadAverageTime(); // Refresh average completion time after checking
     } catch (e) { setError('Could not update task'); }
   }
 
   async function handleDelete(id) {
     if (!window.confirm('Delete this task?')) return;
-    try { await api.delete(`/tasks/${id}`); setTasks((ts) => ts.filter((t) => t.id !== id)); }
-    catch (e) { setError('Could not delete task'); }
+    try {
+      await api.delete(`/tasks/${id}`);
+      setTasks((ts) => ts.filter((t) => t.id !== id));
+      await loadAverageTime(); // Refresh after delete
+    } catch (e) { setError('Could not delete task'); }
   }
 
   async function handleEdit(task) {
     const newName = window.prompt('Edit task name', task.name);
     if (newName == null) return;
     const newDate = window.prompt('Edit due date (YYYY-MM-DD) or empty', task.dateDue || '');
-    const newStartTime = window.prompt('Edit start time (YYYY-MM-DDTHH:MM) or empty', task.startTime || '');
-    const newEndTime = window.prompt('Edit end time (YYYY-MM-DDTHH:MM) or empty', task.endTime || '');
+    const newStartDate = window.prompt('Edit start date (YYYY-MM-DD) or empty', task.startDate || '');
+    const newStartTime = window.prompt('Edit start time (HH:MM) or empty', task.startTime || '');
+    const newEndDate = window.prompt('Edit end date (YYYY-MM-DD) or empty', task.endDate || '');
+    const newEndTime = window.prompt('Edit end time (HH:MM) or empty', task.endTime || '');
+    const newComplexity = window.prompt('Edit complexity (LOW, MEDIUM, HIGH, CRITICAL) or empty', task.complexity || '');
+    const newCategory = window.prompt('Edit category or empty', task.category || '');
+    const newCompletionTime = window.prompt('Edit completion time (minutes) or empty', task.completionTimeMinutes || '');
     try {
       const updated = {
         ...task,
         name: newName,
         dateDue: newDate || null,
+        startDate: newStartDate || null,
         startTime: newStartTime || null,
-        endTime: newEndTime || null
+        endDate: newEndDate || null,
+        endTime: newEndTime || null,
+        complexity: newComplexity || null,
+        category: newCategory || null,
+        completionTimeMinutes: newCompletionTime ? parseInt(newCompletionTime) : null
       };
       const res = await api.put(`/tasks/${task.id}`, updated);
       setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
@@ -108,28 +158,114 @@ export default function Tasks() {
     <div className="container py-4">
       <div className="d-flex align-items-center justify-content-between mb-3">
         <h3 className="mb-0">Tasks</h3>
-        <div className="col-md-4">
-          <input
-            type="search"
-            className="form-control"
-            placeholder="Search tasks..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        {averageTime !== null && (
+          <div className="alert alert-info mb-0 py-2">
+            <strong>Average Completion Time:</strong> {averageTime.toFixed(1)} minutes
+          </div>
+        )}
+      </div>
+
+      {/* Search and Filter Section */}
+      <div className="card mb-3">
+        <div className="card-body">
+          <div className="row g-2">
+            <div className="col-md-4">
+              <input
+                type="search"
+                className="form-control"
+                placeholder="Search tasks..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="col-md-3">
+              <select
+                className="form-select"
+                value={filterComplexity}
+                onChange={(e) => setFilterComplexity(e.target.value)}
+              >
+                <option value="">All Complexities</option>
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+            </div>
+            <div className="col-md-3">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Filter by category..."
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+              />
+            </div>
+            <div className="col-md-2">
+              <button
+                className="btn btn-secondary w-100"
+                onClick={() => { setSearch(''); setFilterComplexity(''); setFilterCategory(''); }}
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Add Task Form */}
       <form className="mb-3" onSubmit={handleAdd}>
-        <div className="input-group mb-2">
-          <input type="text" className="form-control" placeholder="New task" value={name} onChange={(e) => setName(e.target.value)} />
-          <input type="date" className="form-control" style={{maxWidth: '180px'}} value={dateDue} onChange={(e) => setDateDue(e.target.value)} />
-          <button className="btn btn-success" type="submit">Add</button>
-        </div>
-        <div className="input-group">
-          <span className="input-group-text">Start</span>
-          <input type="datetime-local" className="form-control" style={{maxWidth: '220px'}} value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-          <span className="input-group-text">End</span>
-          <input type="datetime-local" className="form-control" style={{maxWidth: '220px'}} value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+        <div className="card">
+          <div className="card-header">
+            <strong>Add New Task</strong>
+          </div>
+          <div className="card-body">
+            <div className="row g-2 mb-2">
+              <div className="col-md-5">
+                <input type="text" className="form-control" placeholder="Task name *" value={name} onChange={(e) => setName(e.target.value)} required />
+              </div>
+              <div className="col-md-2">
+                <input type="date" className="form-control" placeholder="Due date" value={dateDue} onChange={(e) => setDateDue(e.target.value)} />
+              </div>
+              <div className="col-md-2">
+                <input type="text" className="form-control" placeholder="Category" value={category} onChange={(e) => setCategory(e.target.value)} />
+              </div>
+              <div className="col-md-3">
+                <input type="number" className="form-control" placeholder="Completion time (min)" value={completionTime} onChange={(e) => setCompletionTime(e.target.value)} />
+              </div>
+            </div>
+            <div className="row g-2 mb-2">
+              <div className="col-md-3">
+                <label className="form-label small mb-0">Start Date</label>
+                <input type="date" className="form-control" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label small mb-0">Start Time</label>
+                <input type="time" className="form-control" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label small mb-0">End Date</label>
+                <input type="date" className="form-control" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label small mb-0">End Time</label>
+                <input type="time" className="form-control" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+              </div>
+            </div>
+            <div className="row g-2">
+              <div className="col-md-3">
+                <select className="form-select" value={complexity} onChange={(e) => setComplexity(e.target.value)}>
+                  <option value="">Select Complexity</option>
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                  <option value="CRITICAL">Critical</option>
+                </select>
+              </div>
+              <div className="col-md-9 d-flex align-items-end">
+                <button className="btn btn-success" type="submit">Add Task</button>
+              </div>
+            </div>
+          </div>
         </div>
       </form>
 
@@ -144,12 +280,37 @@ export default function Tasks() {
             <li key={t.id} className="list-group-item">
               <div className="d-flex align-items-center gap-3">
                 <input className="form-check-input me-2" type="checkbox" checked={!!t.checked} onChange={() => toggleChecked(t)} />
-                <div>
-                  <div className={t.checked ? 'text-decoration-line-through text-muted' : ''}>{t.name}</div>
-                  <small className="text-muted">
+                <div className="flex-grow-1">
+                  <div className={t.checked ? 'text-decoration-line-through text-muted' : ''}>
+                    <strong>{t.name}</strong>
+                    {t.complexity && (
+                      <span className={`badge ms-2 ${
+                        t.complexity === 'CRITICAL' ? 'bg-danger' :
+                        t.complexity === 'HIGH' ? 'bg-warning text-dark' :
+                        t.complexity === 'MEDIUM' ? 'bg-info' : 'bg-success'
+                      }`}>
+                        {t.complexity}
+                      </span>
+                    )}
+                    {t.category && <span className="badge bg-secondary ms-2">{t.category}</span>}
+                    {t.completionTimeMinutes && (
+                      <span className="badge bg-light text-dark ms-2">
+                        {t.completionTimeMinutes} min
+                      </span>
+                    )}
+                  </div>
+                  <small className="text-muted d-block">
                     {t.dateDue && <span>Due: {t.dateDue}</span>}
-                    {t.startTime && <span className="ms-2">Start: {new Date(t.startTime).toLocaleString()}</span>}
-                    {t.endTime && <span className="ms-2">End: {new Date(t.endTime).toLocaleString()}</span>}
+                    {(t.startDate || t.startTime) && (
+                      <span className="ms-2">
+                        Start: {t.startDate || ''} {t.startTime || ''}
+                      </span>
+                    )}
+                    {(t.endDate || t.endTime) && (
+                      <span className="ms-2">
+                        End: {t.endDate || ''} {t.endTime || ''}
+                      </span>
+                    )}
                   </small>
                   {/* Show assigned users */}
                   {Array.isArray(t.users) && t.users.length > 0 && (

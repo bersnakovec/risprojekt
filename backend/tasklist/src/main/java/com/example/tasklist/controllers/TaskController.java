@@ -3,6 +3,7 @@ package com.example.tasklist.controllers;
 import com.example.tasklist.dao.TaskRepository;
 import com.example.tasklist.models.Task;
 import com.example.tasklist.models.TaskAttachment;
+import com.example.tasklist.models.TaskComplexity;
 import com.example.tasklist.models.User;
 import com.example.tasklist.service.FileStorageService;
 import com.example.tasklist.service.UserService;
@@ -44,11 +45,22 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<Task> getAll(@RequestParam(required = false) String search) {
+    public List<Task> getAll(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) TaskComplexity complexity,
+            @RequestParam(required = false) String category) {
         User user = getAuthenticatedUser();
-        if (search != null && !search.trim().isEmpty()) {
-            return repository.findByUsersContainingAndNameContainingIgnoreCase(user, search.trim());
+
+        // Use the new advanced search method
+        if (search != null || complexity != null || category != null) {
+            return repository.findByUserWithFilters(
+                user,
+                search != null && !search.trim().isEmpty() ? search.trim() : null,
+                complexity,
+                category != null && !category.trim().isEmpty() ? category.trim() : null
+            );
         }
+
         return repository.findByUsersContaining(user);
     }
 
@@ -64,6 +76,7 @@ public class TaskController {
     public ResponseEntity<Task> create(@RequestBody Task task) {
         User user = getAuthenticatedUser();
         task.getUsers().add(user);
+        // completionTimeMinutes is set from frontend if provided
         Task saved = repository.save(task);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -76,11 +89,33 @@ public class TaskController {
             existing.setDateDue(task.getDateDue());
             existing.setChecked(task.isChecked());
             existing.setUsers(task.getUsers());
+            existing.setStartDate(task.getStartDate());
             existing.setStartTime(task.getStartTime());
+            existing.setEndDate(task.getEndDate());
             existing.setEndTime(task.getEndTime());
+            existing.setComplexity(task.getComplexity());
+            existing.setCategory(task.getCategory());
+            existing.setCompletionTimeMinutes(task.getCompletionTimeMinutes());
             Task updated = repository.save(existing);
             return ResponseEntity.ok(updated);
         }).orElse(ResponseEntity.notFound().build());
+    }
+
+    // Endpoint to get average completion time for authenticated user
+    @GetMapping("/average-completion-time")
+    public ResponseEntity<Double> getAverageCompletionTime() {
+        User user = getAuthenticatedUser();
+        List<Task> tasks = repository.findByUsersContaining(user);
+        // Only consider tasks with completionTimeMinutes set and checked=true
+        List<Integer> times = tasks.stream()
+            .filter(t -> t.isChecked() && t.getCompletionTimeMinutes() != null)
+            .map(Task::getCompletionTimeMinutes)
+            .toList();
+        if (times.isEmpty()) {
+            return ResponseEntity.ok(0.0);
+        }
+        double avg = times.stream().mapToInt(Integer::intValue).average().orElse(0.0);
+        return ResponseEntity.ok(avg);
     }
 
     @DeleteMapping("/{id}")
