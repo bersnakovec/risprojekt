@@ -2,9 +2,10 @@ name: CI - Build backend, build frontend, test backend
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "**" ]
   pull_request:
     branches: [ "main", "dev" ]
+
 
 jobs:
   backend_build:
@@ -23,7 +24,7 @@ jobs:
 
       - name: Build backend (skip tests)
         working-directory: backend/tasklist
-        run: mvn -B -f backend/tasklist/pom.xml clean package -DskipTests
+        run: mvn -B clean package -DskipTests
 
   frontend_build:
     runs-on: ubuntu-latest
@@ -65,4 +66,4 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend/tasklist
-        run: mvn -B -f backend/tasklist/pom.xml test
+        run: mvn -B test
