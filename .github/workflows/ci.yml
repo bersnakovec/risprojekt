@@ -66,4 +66,4 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend/tasklist
-        run: mvn -B test
+        run: mvn -B test -Dspring.profiles.active=test
