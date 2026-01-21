@@ -23,7 +23,7 @@ jobs:
 
       - name: Build backend (skip tests)
         working-directory: backend/tasklist
-        run: mvn -B clean package -DskipTests
+        run: mvn -B -f backend/tasklist/pom.xml clean package -DskipTests
 
   frontend_build:
     runs-on: ubuntu-latest
@@ -65,4 +65,4 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend/tasklist
-        run: mvn -B test
+        run: mvn -B -f backend/tasklist/pom.xml test
