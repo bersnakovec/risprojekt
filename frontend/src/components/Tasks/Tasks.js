@@ -53,32 +53,47 @@ export default function Tasks() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    loadTasks();
-    loadAverageTime();
-  }, [search, filterComplexity, filterCategory]); // reload when filters change
+  const loadTasks = async () => {
+    setLoading(true);
+    setError(null);
 
-  async function loadTasks() {
-    setLoading(true); setError(null);
     try {
       const params = {};
       if (search) params.search = search;
       if (filterComplexity) params.complexity = filterComplexity;
       if (filterCategory) params.category = filterCategory;
+
       const res = await api.get('/tasks', { params });
       setTasks(res.data || []);
     } catch (e) {
       setError('Could not load tasks');
-    } finally { setLoading(false); }
-  }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  async function loadAverageTime() {
+  const loadAverageTime = async () => {
     try {
       const res = await api.get('/tasks/average-completion-time');
       setAverageTime(res.data);
     } catch (e) {
       setAverageTime(null);
     }
+  };
+
+  loadTasks();
+  loadAverageTime();
+}, [search, filterComplexity, filterCategory]);
+
+async function refreshAverageTime() {
+  try {
+    const res = await api.get('/tasks/average-completion-time');
+    setAverageTime(res.data);
+  } catch (e) {
+    setAverageTime(null);
   }
+}
+
 
   async function handleAdd(e) {
     e.preventDefault();
@@ -108,7 +123,7 @@ export default function Tasks() {
       const updated = { ...task, checked: !task.checked };
       const res = await api.put(`/tasks/${task.id}`, updated);
       setTasks((ts) => ts.map((t) => (t.id === res.data.id ? res.data : t)));
-      await loadAverageTime(); // Refresh average completion time after checking
+      await refreshAverageTime(); // Refresh average completion time after checking
     } catch (e) { setError('Could not update task'); }
   }
 
@@ -117,7 +132,7 @@ export default function Tasks() {
     try {
       await api.delete(`/tasks/${id}`);
       setTasks((ts) => ts.filter((t) => t.id !== id));
-      await loadAverageTime(); // Refresh after delete
+      await refreshAverageTime(); // Refresh after delete
     } catch (e) { setError('Could not delete task'); }
   }
 
