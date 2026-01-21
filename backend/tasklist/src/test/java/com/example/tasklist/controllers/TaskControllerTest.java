@@ -1,11 +1,14 @@
 package com.example.tasklist.controllers;
 
+import org.junit.jupiter.api.AfterEach;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com.example.tasklist.dao.TaskRepository;
 import com.example.tasklist.models.Task;
 import com.example.tasklist.models.User;
 import com.example.tasklist.service.UserService;
 import com.example.tasklist.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,6 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TaskController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class TaskControllerTest {
+    
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
+    
     @Autowired
     private MockMvc mockMvc;
 
