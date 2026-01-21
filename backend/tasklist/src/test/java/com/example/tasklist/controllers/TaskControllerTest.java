@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import com.example.tasklist.service.FileStorageService;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -37,7 +38,6 @@ class TaskControllerTest {
     void tearDown() {
         SecurityContextHolder.clearContext();
     }
-
     
     @Autowired
     private MockMvc mockMvc;
@@ -47,6 +47,9 @@ class TaskControllerTest {
 
     @MockBean
     private TaskRepository taskRepository;
+
+    @MockBean private 
+    FileStorageService fileStorageService;
 
     @MockBean
     private JwtUtil jwtUtil;
