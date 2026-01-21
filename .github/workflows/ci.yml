@@ -9,7 +9,7 @@ on:
 jobs:
   backend_build:
     runs-on: ubuntu-latest
-    name: Backend - build (Maven, skip tests)
+    name: Backend - build (skip tests)
 
     steps:
       - uses: actions/checkout@v4
@@ -22,12 +22,12 @@ jobs:
           cache: maven
 
       - name: Build backend (skip tests)
-        working-directory: backend
+        working-directory: backend/tasklist
         run: mvn -B clean package -DskipTests
 
   frontend_build:
     runs-on: ubuntu-latest
-    name: Frontend - build (React)
+    name: Frontend - build
     needs: backend_build
 
     steps:
@@ -63,6 +63,6 @@ jobs:
           java-version: "21"
           cache: maven
 
-      - name: Run tests
-        working-directory: backend
+      - name: Run backend tests
+        working-directory: backend/tasklist
         run: mvn -B test
